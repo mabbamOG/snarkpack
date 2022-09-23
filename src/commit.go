@@ -3,38 +3,20 @@ package snarkpack
 import (
 	"github.com/consensys/gnark-crypto/ecc/bn254"
 )
-// Commit single
-func (cs CS) Commit(A []bn254.G1Affine) Commitment {
-	//TODO: check equal length of inputs
-	t, err := bn254.Pair(A, cs.V1)
-	if err != nil {
-		panic(err)
-	}
 
-	u, err := bn254.Pair(A, cs.V2)
-	if err != nil {
-		panic(err)
-	}
-
-	return Commitment{T: t, U: u}
+func CommitSingle(vkey VKey, A []bn254.G1Affine) (t bn254.GT, u bn254.GT) {
+	t = Pair(A, vkey.V1)
+	u = Pair(A, vkey.V2)
+	return t, u
 }
 
-// Commit double
-func (cd CD) Commit(A []bn254.G1Affine, B []bn254.G2Affine) Commitment {
-	//TODO: check equal length of inputs
-	AW1 := append(A, cd.W1...)
-	V1B := append(cd.V1, B...)
-	t, err := bn254.Pair(AW1, V1B)
-	if err != nil {
-		panic(err)
-	}
-	
-	AW2 := append(A, cd.W2...)
-	V2B := append(cd.V2, B...)
-	u, err := bn254.Pair(AW2, V2B)
-	if err != nil {
-		panic(err)
-	}
+func CommitDouble(vkey VKey, wkey WKey, A []bn254.G1Affine, B []bn254.G2Affine) (t bn254.GT, u bn254.GT) {
+	AV1 := Pair(A, vkey.V1)
+	W1B := Pair(wkey.W1, B)
+	t = *new(bn254.GT).Add(&AV1, &W1B)
 
-	return Commitment{T: t, U: u}
+	AV2 := Pair(A, vkey.V2)
+	W2B := Pair(wkey.W2, B)
+	u = *new(bn254.GT).Add(&AV2, &W2B)
+	return t, u
 }

@@ -1,42 +1,34 @@
 package snarkpack
 
 import (
-	"math/big"
-
 	"github.com/consensys/gnark-crypto/ecc/bn254"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr/kzg"
 )
 
-type CS struct {
+type VKey struct {
 	V1 []bn254.G2Affine
 	V2 []bn254.G2Affine
 }
 
-type CD struct {
-	V1 []bn254.G2Affine
-	V2 []bn254.G2Affine
+type WKey struct {
 	W1 []bn254.G1Affine
 	W2 []bn254.G1Affine
 }
 
-type Commitment struct {
-	T bn254.GT
-	U bn254.GT
-}
 
 type MTIPP_SRS struct {
-	cs  CS
-	cd  CD
+	vkey VKey
+	wkey WKey
 	kzg kzg.SRS
 }
 
-type MTIPP_Statement struct {
-	cm_AB Commitment
-	cm_C  Commitment
-	Z_AB  bn254.GT
-	Z_C   bn254.GT
-	r     big.Int
+type Z struct {
+	AB_L bn254.GT
+	AB_R bn254.GT
+	C_L  bn254.G1Affine
+	C_R  bn254.G1Affine
 }
+
 
 type MTIPP_Witness struct {
 	A []bn254.G1Affine
